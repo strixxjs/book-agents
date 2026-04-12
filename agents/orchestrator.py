@@ -1,8 +1,8 @@
 import os
+from tools.agent_tools import generate_book_title, create_plot
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
-from tools.agent_tools import generate_book_title
 
 load_dotenv()
 
@@ -12,7 +12,7 @@ llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
 )
 
-tools = [generate_book_title]
+tools = [generate_book_title, create_plot]
 
 agent = create_react_agent(model=llm,
                            tools=tools,

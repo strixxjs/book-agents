@@ -6,8 +6,12 @@ from rich import print as rprint
 load_dotenv()
 
 def main():
-    result = run_orchestrator("Придумай назву для книжки про космічних козаків")
-    rprint(f"[bold green][Результат]:[/bold green] {result}")
+    query = "Використай інструмент create_plot з topic='космічні козаки' та genre='фантастика' і покажи повний результат"
+
+    result = run_orchestrator(query)
+
+    rprint("\n[bold cyan]=== Сюжет вашої майбутньої книги ===[/bold cyan]")
+    print(result)
 
 if __name__ == "__main__":
     main()
