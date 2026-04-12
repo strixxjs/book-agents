@@ -5,6 +5,8 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 from rich import print as rprint
 
+from tools.agent_tools import generate_book_title
+
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -15,13 +17,23 @@ llm = ChatGroq(
     groq_api_key = GROQ_API_KEY
 )
 
+
+llm_with_tools = llm.bind_tools([generate_book_title])
+
 def main():
     messages = [
         SystemMessage(content="Ти творчий письменник. Відповідай українською мовою."),
         HumanMessage(content="Придумай назву для книжки про космічних козаків")
     ]
     try:
-        response = llm.invoke(messages)
+        response = llm_with_tools.invoke(messages)
+
+        if response.tool_calls:
+            tool_call = response.tool_calls[0]
+            result = generate_book_title.invoke(tool_call["args"])
+            rprint(f"[bold yellow][Tool result]:[/bold yellow] {result}")
+
+        rprint(f"[Tool calls]: {response.tool_calls}")
         answer = response.content
         rprint(f"\n[bold green][LLM відповів]:[/bold green] [italic]{answer}[/italic]\n")
     except Exception as e:
