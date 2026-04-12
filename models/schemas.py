@@ -25,7 +25,7 @@ class Chapter(BaseModel):
 class FinalBook(BaseModel):
     request: BookRequest
     plot: PlotOutline
-    chapter: List[Chapter]
+    chapters: List[Chapter]
 
 
 if __name__ == "__main__":
