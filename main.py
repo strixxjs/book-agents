@@ -5,13 +5,27 @@ from rich import print as rprint
 
 load_dotenv()
 
+
 def main():
-    query = "Використай інструмент create_plot з topic='космічні козаки' та genre='фантастика' і покажи повний результат"
+    query = """
+    Створи сюжет для книжки про космічних козаків у жанрі фантастика.
+    Потім напиши перший розділ цієї книжки.
+    """
 
     result = run_orchestrator(query)
 
-    rprint("\n[bold cyan]=== Сюжет вашої майбутньої книги ===[/bold cyan]")
-    print(result)
+    rprint("\n[bold magenta]=== Результат виконання ===[/bold magenta]")
+
+    try:
+        data = json.loads(result)
+        if "content" in data:
+            rprint(f"[bold yellow]Розділ {data.get('number')}: {data.get('title')}[/bold yellow]")
+            rprint(data.get("content"))
+        else:
+            rprint(data)
+    except:
+        rprint(result)
+
 
 if __name__ == "__main__":
     main()
