@@ -24,11 +24,17 @@ def save_book(book: FinalBook):
             f.write(f"{chapter.content}\n\n")
     rprint(f"[bold green]Книжку збережено:[/bold green] {path}")
 
+
 def main():
+    rprint("[bold cyan]Ласкаво просимо до Book Agents! 📚[/bold cyan]")
+    topic = input("Введіть тему книжки: ")
+    genre = input("Введіть жанр (фантастика, детектив, пригоди...): ")
+    num_chapters = int(input("Кількість розділів (1-5): "))
+
     request = BookRequest(
-        topic="космічні козаки",
-        genre="фантастика",
-        num_chapters=3
+        topic=topic,
+        genre=genre,
+        num_chapters=num_chapters
     )
 
     rprint("[bold cyan]Крок 1: Створюю сюжет...[/bold cyan]")
