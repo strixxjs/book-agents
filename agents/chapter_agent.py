@@ -36,11 +36,10 @@ def run_chapter_agent(plot: PlotOutline, chapter_title: str, chapter_number: int
     response = llm.invoke([system_prompt, human_message])
 
     content = response.content.strip()
-
-    if content.startswith("```json"):
-        content = content.replace("```json", "", 1).replace("```", "", 1).strip()
-    elif content.startswith("```"):
-        content = content.replace("```", "", 1).replace("```", "", 1).strip()
+    if "```json" in content:
+        content = content.split("```json")[1].split("```")[0].strip()
+    elif "```" in content:
+        content = content.split("```")[1].split("```")[0].strip()
 
     parsed_json = json.loads(content)
     return Chapter(**parsed_json)

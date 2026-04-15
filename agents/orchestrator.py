@@ -1,5 +1,6 @@
 import os
 from tools.agent_tools import generate_book_title, create_plot, create_chapter
+from agents.base_agent import BaseAgent
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
@@ -14,10 +15,14 @@ llm = ChatGroq(
 
 tools = [generate_book_title, create_plot, create_chapter]
 
-agent = create_react_agent(model=llm,
+
+class OrchestratorAgent(BaseAgent):
+    def __init__(self):
+        super().__init__(name="Orchestrator")
+        self.agent = create_react_agent(model=llm,
                            tools=tools,
                            prompt="Ти головний редактор книжкового видавництва. Відповідай українською",)
 
-def run_orchestrator(user_input: str) -> str:
-    result = agent.invoke({"messages": [{"role": "user", "content": user_input}]})
-    return result["messages"][-1].content
+    def run(self, input_data: dict) -> dict:
+        result = self.agent.invoke({"messages": [{"role": "user", "content": input_data}]})
+        return result["messages"][-1].content
