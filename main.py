@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 from dotenv import load_dotenv
 from rich import print as rprint
@@ -7,6 +8,16 @@ from rich.progress import track
 from agents.plot_agent import run_plot_agent
 from agents.chapter_agent import run_chapter_agent
 from models.schemas import FinalBook, BookRequest
+
+
+def safe_input(prompt: str) -> str:
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    raw = sys.stdin.buffer.readline().rstrip(b'\r\n')
+    try:
+        return raw.decode('utf-8')
+    except UnicodeDecodeError:
+        return raw.decode('cp1251')
 
 load_dotenv()
 
@@ -27,9 +38,9 @@ def save_book(book: FinalBook):
 
 def main():
     rprint("[bold cyan]Ласкаво просимо до Book Agents! 📚[/bold cyan]")
-    topic = input("Введіть тему книжки: ")
-    genre = input("Введіть жанр (фантастика, детектив, пригоди...): ")
-    num_chapters = int(input("Кількість розділів (1-5): "))
+    topic = safe_input("Введіть тему книжки: ")
+    genre = safe_input("Введіть жанр (фантастика, детектив, пригоди...): ")
+    num_chapters = int(safe_input("Кількість розділів (1-5): "))
 
     request = BookRequest(
         topic=topic,
