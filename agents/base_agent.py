@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from utils.decorators import timer
 
 class BaseAgent(ABC):
     def __init__(self, name: str):
@@ -24,6 +25,7 @@ class BaseAgent(ABC):
 
 
 class WriterAgent(BaseAgent):
+    @timer
     def run(self, input_data: dict) -> dict:
         self.log("Starting...")
         if not self.validate_input(input_data):

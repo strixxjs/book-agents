@@ -1,12 +1,14 @@
 import os
 import json
 from dotenv import load_dotenv
+from utils.decorators import timer
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 from models.schemas import PlotOutline, Chapter
 
 load_dotenv()
 
+@timer(name="Написання сюжету")
 def run_chapter_agent(plot: PlotOutline, chapter_title: str, chapter_number: int) -> Chapter:
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",

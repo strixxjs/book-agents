@@ -1,6 +1,7 @@
 import os
 from tools.agent_tools import generate_book_title, create_plot, create_chapter
 from agents.base_agent import BaseAgent
+from utils.decorators import timer
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
@@ -23,6 +24,7 @@ class OrchestratorAgent(BaseAgent):
                            tools=tools,
                            prompt="Ти головний редактор книжкового видавництва. Відповідай українською",)
 
+    @timer
     def run(self, input_data: dict) -> dict:
         result = self.agent.invoke({"messages": [{"role": "user", "content": input_data}]})
         return result["messages"][-1].content
