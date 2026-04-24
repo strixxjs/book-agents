@@ -1,12 +1,13 @@
 import time
+import asyncio
 from functools import wraps
 
 def timer(name = None):
     def decorator(func):
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             start = time.time()
-            result = func(*args, **kwargs)
+            result = await func(*args, **kwargs)
             end = time.time()
             label = name or func.__name__
             print(f"[Таймер] {label} виконано в {end - start:.2f}s")

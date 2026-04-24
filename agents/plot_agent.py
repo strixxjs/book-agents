@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from dotenv import load_dotenv
 from utils.decorators import timer
 from langchain_groq import ChatGroq
@@ -9,7 +10,7 @@ from models.schemas import PlotOutline
 load_dotenv()
 
 @timer(name="Створення сюжету")
-def run_plot_agent(topic: str, genre: str) -> PlotOutline:
+async def run_plot_agent(topic: str, genre: str) -> PlotOutline:
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
         temperature=0.7,
@@ -31,7 +32,7 @@ def run_plot_agent(topic: str, genre: str) -> PlotOutline:
 
     human_message = HumanMessage(content=(f"Створю сюжет для книжки. Тема: {topic}. Жанр: {genre}"))
 
-    response = llm.invoke([system_prompt, human_message])
+    response = await llm.ainvoke([system_prompt, human_message])
 
     content = response.content.strip()
     if "```json" in content:

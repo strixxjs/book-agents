@@ -6,10 +6,12 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 from models.schemas import PlotOutline, Chapter
 
+import asyncio
+
 load_dotenv()
 
 @timer(name="Написання сюжету")
-def run_chapter_agent(plot: PlotOutline, chapter_title: str, chapter_number: int) -> Chapter:
+async def run_chapter_agent(plot: PlotOutline, chapter_title: str, chapter_number: int) -> Chapter:
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
         temperature=0.8,
@@ -35,13 +37,14 @@ def run_chapter_agent(plot: PlotOutline, chapter_title: str, chapter_number: int
 
     human_message = HumanMessage(content=human_content)
 
-    response = llm.invoke([system_prompt, human_message])
+    response = await llm.ainvoke([system_prompt, human_message])
 
     content = response.content.strip()
     if "```json" in content:
         content = content.split("```json")[1].split("```")[0].strip()
     elif "```" in content:
         content = content.split("```")[1].split("```")[0].strip()
+
 
     parsed_json = json.loads(content)
     return Chapter(**parsed_json)

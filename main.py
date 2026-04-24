@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import asyncio
 from dotenv import load_dotenv
 from rich import print as rprint
 from rich.progress import track
@@ -36,7 +37,7 @@ def save_book(book: FinalBook):
     rprint(f"[bold green]Книжку збережено:[/bold green] {path}")
 
 
-def main():
+async def main():
     rprint("[bold cyan]Ласкаво просимо до Book Agents! 📚[/bold cyan]")
     topic = safe_input("Введіть тему книжки: ")
     genre = safe_input("Введіть жанр (фантастика, детектив, пригоди...): ")
@@ -49,19 +50,22 @@ def main():
     )
 
     rprint("[bold cyan]Крок 1: Створюю сюжет...[/bold cyan]")
-    plot = run_plot_agent(request.topic, request.genre)
+    plot = await run_plot_agent(request.topic, request.genre)
     rprint(f"[green]✓ Назва:[/green] {plot.title}")
     rprint(f"[green]✓ Персонажі:[/green] {', '.join(plot.characters)}")
 
     chapters = []
     rprint("\n[bold cyan]Крок 2: Пишу розділи...[/bold cyan]")
+    tasks = []
     for i, chapter_title in enumerate(plot.chapters_plan[:request.num_chapters], 1):
-        rprint(f"[yellow]→ Пишу розділ {i}: {chapter_title}[/yellow]")
-        chapter = run_chapter_agent(plot, chapter_title, i)
-        chapters.append(chapter)
-        rprint(f"[green]✓ Розділ {i} готовий[/green]")
+        tasks.append(run_chapter_agent(plot, chapter_title, i))
+        rprint(f"[yellow]→ Пишу розділи {i}: {chapter_title}[/yellow]")
+
+    chapters = await asyncio.gather(*tasks)
+    rprint(f"[green]✓ Всі {len(chapters)} розділи готові[/green]")
 
     book = FinalBook(request=request, plot=plot, chapters=chapters)
+
 
     rprint("\n[bold cyan]Крок 3: Зберігаю книжку...[/bold cyan]")
     save_book(book)
@@ -69,5 +73,6 @@ def main():
     rprint("\n[bold magenta]🎉 Книжка готова![/bold magenta]")
     rprint(f"[bold]Розділів написано:[/bold] {len(chapters)}")
 
+
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
