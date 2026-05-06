@@ -28,6 +28,10 @@ load_dotenv()
 def save_book(book: FinalBook):
     os.makedirs("output", exist_ok=True)
     path = "output/book.md"
+    counter = 1
+    while os.path.exists(path):
+        counter += 1
+        path = f"output/book{counter}.md"
     with open(path, "w", encoding="utf-8") as f:
         f.write(f"# {book.plot.title}\n\n")
         f.write(f"**Жанр:** {book.request.genre}\n\n")
