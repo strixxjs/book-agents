@@ -2,6 +2,9 @@ import os
 import sys
 import json
 import asyncio
+
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
 from dotenv import load_dotenv
 from rich import print as rprint
 from rich.progress import track

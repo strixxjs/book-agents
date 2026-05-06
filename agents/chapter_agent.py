@@ -1,5 +1,6 @@
 import os
 import json
+from json_repair import repair_json
 from dotenv import load_dotenv
 from utils.decorators import timer
 from langchain_groq import ChatGroq
@@ -46,5 +47,5 @@ async def run_chapter_agent(plot: PlotOutline, chapter_title: str, chapter_numbe
         content = content.split("```")[1].split("```")[0].strip()
 
 
-    parsed_json = json.loads(content)
+    parsed_json = json.loads(repair_json(content))
     return Chapter(**parsed_json)
