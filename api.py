@@ -24,3 +24,18 @@ def get_book(book_id: int):
     if book_id >= len(books):
         raise HTTPException(status_code=404)
     return books[book_id]
+
+
+@app.put("/api/books/{book_id}")
+def update_book(book_id: int, book: Book):
+    if book_id >= len(books):
+        raise HTTPException(status_code=404)
+    books[book_id] = book.dict()
+    return books[book_id]
+
+
+@app.delete("/api/books/{book_id}", status_code = 204)
+def delete_book(book_id: int):
+    if book_id >= len(books):
+        raise HTTPException(status_code=404)
+    books.pop(book_id)
