@@ -1,3 +1,7 @@
+import asyncio
+from models.schemas import BookRequest, FinalBook
+from agents.plot_agent import run_plot_agent
+from agents.chapter_agent import run_chapter_agent
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -39,3 +43,15 @@ def delete_book(book_id: int):
     if book_id >= len(books):
         raise HTTPException(status_code=404)
     books.pop(book_id)
+
+
+@app.post("/generate", status_code = 201)
+async def generate(request: BookRequest):
+    plot = await run_plot_agent(request.topic, request.genre)
+
+    tasks = []
+    for i, chapter_title in enumerate(plot.chapters_plan[:request.num_chapters], 1):
+        tasks.append(run_chapter_agent(plot, chapter_title, i))
+    chapters = await asyncio.gather(*tasks)
+
+    return FinalBook(request=request, plot=plot, chapters=chapters)
