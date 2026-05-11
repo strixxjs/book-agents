@@ -7,3 +7,8 @@ rich
 groq
 langchain-groq
 json-repair
+fastapi
+uvicorn[standard]
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
