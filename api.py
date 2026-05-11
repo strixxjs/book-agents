@@ -1,17 +1,39 @@
 import asyncio
+
 from models.schemas import BookRequest, FinalBook
 from agents.plot_agent import run_plot_agent
 from agents.chapter_agent import run_chapter_agent
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from auth import authenticate_user, create_access_token, decode_access_token
 from pydantic import BaseModel
 
 app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 books = []
 
 class Book(BaseModel):
     title: str
     author: str
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+    payload = decode_access_token(token)
+    if payload is None:
+        raise HTTPException(401, "Invalid or expired token")
+    else:
+        return payload
+
+
+@app.post("/login")
+def login(form: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form.username, form.password)
+    if user is None:
+        raise HTTPException(401, "Invalid credentials")
+    token = create_access_token({"sub": user["username"]})
+    return {"access_token": token, "token_type": "bearer"}
+
 
 @app.get("/api/books")
 def get_books():
@@ -46,7 +68,7 @@ def delete_book(book_id: int):
 
 
 @app.post("/generate", status_code = 201)
-async def generate(request: BookRequest):
+async def generate(request: BookRequest, current_user: dict = Depends(get_current_user)):
     plot = await run_plot_agent(request.topic, request.genre)
 
     tasks = []
